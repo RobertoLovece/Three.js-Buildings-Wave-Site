@@ -1,4 +1,3 @@
-import { TweenMax } from 'gsap/gsap-core';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
@@ -11,7 +10,7 @@ require('normalize.css/normalize.css');
 require("./index.css");
 
 let scene, camera, renderer;
-let controls, container, models;
+let controls, container, models, backgroundShape;
 
 //
 
@@ -19,9 +18,9 @@ const group = new THREE.Object3D();
 const gridSize = 40;
 const buildings = [];
 const fogConfig = {
-    color: '#fff',
+    color: '#353c3c',
     near: 1,
-    far: 138
+    far: 208
 };
 
 //
@@ -37,16 +36,16 @@ window.onload = function () {
     addSpotLight();
     initObjects();
     initControls();
-
+    addBackgroundShape();
 
     var pointLightParams =
     {
         color: '#d3263a',
-        intensity: 4,
+        intensity: 8.2,
         position: {
-            x: 18,
-            y: 22,
-            z: -9,
+            x: 16,
+            y: 100,
+            z: -68,
         }
     };
 
@@ -98,29 +97,29 @@ function initCamera() {
         1000
     );
 
-    camera.position.set(3, 16, 111);
+    camera.position.set(3, 50, 155);
 
     scene.add(camera);
 }
 
 //
 
-function addAmbientLight() {
-    var ambientLight = new THREE.AmbientLight('#fff');
-
-    scene.add(ambientLight);
-}
-
-//
-
 function addSpotLight() {
-    const light = { color: '#fff', x: 100, y: 150, z: 100 };
+    const light = { color: '#ff0000', x: 641, y: -462, z: 509 };
     const spotLight = new THREE.SpotLight(light.color, 1);
 
     spotLight.position.set(light.x, light.y, light.z);
     spotLight.castShadow = true;
 
     scene.add(spotLight);
+}
+
+//
+
+function addAmbientLight() {
+    var ambientLight = new THREE.AmbientLight('#a00a0a');
+
+    scene.add(ambientLight);
 }
 
 //
@@ -152,10 +151,10 @@ function createGrid() {
     const min = 0.001;
 
     const meshParams = {
-        color: '#fff',
-        metalness: 0.58,
-        emissive: '#000000',
-        roughness: 0.18,
+        color: '#000',
+        metalness: 0,
+        emissive: '#000',
+        roughness: 0.77,
     };
 
     // create material outside of loop
@@ -247,13 +246,14 @@ function getRandomBuilding() {
 
 function addFloor() {
 
+    const floor = { color: '#000000' };
     const width = 200;
     const height = 200;
     const planeGeometry = new THREE.PlaneGeometry(width, height);
 
     // all materials can be changed according to your taste and needs
     const planeMaterial = new THREE.MeshStandardMaterial({
-        color: '#fff',
+        color: floor.color,
         metalness: 0,
         emissive: '#000000',
         roughness: 0,
@@ -270,12 +270,26 @@ function addFloor() {
 
 //
 
+function addBackgroundShape() {
+
+    const planeGeometry = new THREE.PlaneGeometry(400, 100);
+    const planeMaterial = new THREE.MeshPhysicalMaterial({ color: '#fff' });
+    backgroundShape = new THREE.Mesh(planeGeometry, planeMaterial);
+
+    backgroundShape.position.y = 10;
+    backgroundShape.position.z = -150;
+
+    scene.add(backgroundShape);
+
+}
+
+//
+
 function initControls() {
 
     controls = new OrbitControls(camera, renderer.domElement);
 
     controls.enablePan = false;
-    controls.enableZoom = false;
     controls.enableRotate = true;
 
 }
